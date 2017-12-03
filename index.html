@@ -31,9 +31,11 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js" integrity="sha256-T9tvV3x+/vCnCoFciKNZwbaJ46q9lh6iZjD0ZjD95lE="
         crossorigin="anonymous"></script>
+    <script src="js/modules/d3-scale-radial.js"></script>
     <script src="js/modules/buttonControl.js"></script>
     <script src="js/modules/barChart.js"></script>
     <script src="js/modules/genderModule.js"></script>
+    <script src="js/modules/radialLinechart.js"></script>
     <script src="js/modules/scatterPlot.js"></script>
 </head>
 
@@ -42,7 +44,10 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-4">
-                <div id="buttons"></div>
+                <div id="buttons">
+                    <div id="weekButtons"></div>
+                    <div id="yearButtons"></div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -60,7 +65,21 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-md-4">
+            <div class="col-xs-4">
+                <h3>Año</h3>
+                <div id="anhoRadialLinechart"></div>
+            </div>
+            <div class="col-xs-4">
+                <h3>Mes</h3>
+                <div id="mesRadialLinechart"></div>
+            </div>
+            <div class="col-xs-4">
+                <h3>Semana</h3>
+                <div id="semanaRadialLinechart"></div>
+            </div>
+            <div class="col-xs-4">
+                <h3>Día</h3>
+                <div id="diaRadialLinechart"></div>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 /* global d3, barChart, genderChart, scatterPlot*/
 
-var sorterWeekDay = {
+var sorterKey = {
     // "sunday": 0, // << if sunday is first day of week
     "lunes": 1,
     "martes": 2,
@@ -8,12 +8,29 @@ var sorterWeekDay = {
     "jueves": 4,
     "viernes": 5,
     "sábado": 6,
-    "domingo": 7
+    "domingo": 7,
+    "enero": 8,
+    "febrero": 9,
+    "marzo": 10,
+    "abril": 11,
+    "mayo": 12,
+    "junio": 13,
+    "julio": 14,
+    "agosto": 15,
+    "septiembre": 16,
+    "octubre": 17,
+    "noviembre": 18,
+    "diciembre": 19
 }
 
-var myButtonControl = buttonControl()
+var weekButtonControl = buttonControl()
     .width(400)
-    .height(50)
+    .height(20)
+    .x(function (d) { return d.key; });
+
+var yearButtonControl = buttonControl()
+    .width(400)
+    .height(20)
     .x(function (d) { return d.key; });
 
 var barrioBarChart = barChart()
@@ -35,19 +52,32 @@ var myGenderChart = genderChart()
     .xRight(function (d) { return +d.value; })
     .y(function (d) { return d.key; });
 
+var myRadialLineChart = radialLineChart()
+    .width(300)
+    .height(300)
+    .modo(0);
+// .modo(modo);
+
 var myScatterPlot = scatterPlot()
     .width(500)
     .height(300)
     .x(function (d) { return d.Barrio2; })
     .y(function (d) { return +d["2016"]; });
 
-function sortByDay(a, b) {
-    var day1 = a.key.toLowerCase();
-    var day2 = b.key.toLowerCase();
-    return sorterWeekDay[day1] > sorterWeekDay[day2];
+var dateFmt = d3.timeParse("%Y/%m/%d %I:%M:%S %p");
+
+function sortByKey(a, b) {
+    var key1 = a.key.toLowerCase();
+    var key2 = b.key.toLowerCase();
+    return sorterKey[key1] > sorterKey[key2];
 }
 
 d3.tsv("data/Hurto celulares - Bogota_4.tsv",
+    function (d) {
+        // This function is applied to each row of the dataset
+        d["TIMESTAMP"] = dateFmt(d["TIMESTAMP"]);
+        return d;
+    },
     function (err, data) {
         if (err) throw err;
 
@@ -56,11 +86,12 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
 
         csData.dimBarrio = csData.dimension(function (d) { return d["BARRIO_2"]; });
         csData.dimArma = csData.dimension(function (d) { return d["ARMA EMPLEADA"]; });
-        csData.dimMovilVictima = csData.dimension(function (d) { return d["MOVIL VICTIMA"]; });
-        csData.dimMovilAgresor = csData.dimension(function (d) { return d["MOVIL AGRESOR"]; });
+        // csData.dimMovilVictima = csData.dimension(function (d) { return d["MOVIL VICTIMA"]; });
+        // csData.dimMovilAgresor = csData.dimension(function (d) { return d["MOVIL AGRESOR"]; });
         csData.dimRangoEtario = csData.dimension(function (d) { return d["RANGO_ETARIO"]; });
-        csData.dimGenero = csData.dimension(function (d) { return d["GENERO"]; });
+        // csData.dimGenero = csData.dimension(function (d) { return d["GENERO"]; });
         // csData.dimTimestamp = csData.dimension(function (d) { return d["TIMESTAMP"]; });
+        csData.dimYear = csData.dimension(function (d) { return d["TIMESTAMP"].getFullYear(); });
         csData.dimDia = csData.dimension(function (d) { return d["DIA"]; });
 
         // GENERO: [MASCULINO|FEMENINO]
@@ -68,14 +99,12 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
 
         csData.barrio = csData.dimBarrio.group();
         csData.arma = csData.dimArma.group();
-        csData.movilVictima = csData.dimMovilVictima.group();
-        csData.movilAgresor = csData.dimMovilAgresor.group();
+        // csData.movilVictima = csData.dimMovilVictima.group();
+        // csData.movilAgresor = csData.dimMovilAgresor.group();
         csData.rangoEtario = csData.dimRangoEtario.group();
-        // csData.timestamp = csData.dimTimestamp.group();
-        csData.dia = csData.dimDia.group().order(function (d) {
-            console.log(d);
-            return d.key;
-        });
+        // csData.timestampYear = csData.dimTimestamp.group(d3.timeYear);
+        csData.year = csData.dimYear.group();
+        csData.dia = csData.dimDia.group();
 
         barrioBarChart.onMouseOver(function (d) {
             csData.dimBarrio.filter(d.key);
@@ -104,12 +133,22 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             update();
         });
 
-        myButtonControl.onMouseOver(function (d) {
+        weekButtonControl.onMouseOver(function (d) {
             csData.dimDia.filter(d.key);
             update();
         });
-        myButtonControl.onMouseOut(function (d) {
+        weekButtonControl.onMouseOut(function (d) {
             csData.dimDia.filterAll();
+            update();
+        });
+
+        yearButtonControl.onMouseOver(function (d) {
+            csData.dimYear.filter(d.key);
+            // csData.dimTimestamp.filter(d.key.getFullYear());
+            update();
+        });
+        yearButtonControl.onMouseOut(function (d) {
+            csData.dimYear.filterAll();
             update();
         });
 
@@ -117,10 +156,13 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
 
         // csData.dimBarrio.fiter();
         function update() {
-            d3.select("#buttons")
-                // .datum(csData.dia.all())
-                .datum(csData.dia.all().sort(function (a, b) { return sortByDay(a, b); }))
-                .call(myButtonControl);
+            d3.select("#weekButtons")
+                .datum(csData.dia.all().sort(function (a, b) { return sortByKey(a, b); }))
+                .call(weekButtonControl);
+
+            d3.select("#yearButtons")
+                .datum(csData.year.all())
+                .call(yearButtonControl);
 
             d3.select("#barrioBarChart")
                 .datum(csData.barrio.top(20))
@@ -139,6 +181,10 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             d3.select("#gender")
                 .datum(csData.rangoEtario.all())
                 .call(myGenderChart);
+
+            // d3.select("#anhoRadialLinechart")
+            //     .datum(csData.timestampYear.all())
+            //     .call(myRadialLineChart);
         }
 
         update();
