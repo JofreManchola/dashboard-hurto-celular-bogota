@@ -15,9 +15,9 @@ function radialLineChart() {
     var yValue = function (d) { return d[1]; };
 
     var xScale = d3.scaleTime();
-    var yScale = d3.scaleRadial();
+    yScale = d3.scaleRadial();
 
-    var opacity = 0.3;
+    var opacity = 0.7;
 
     var colours = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -47,7 +47,8 @@ function radialLineChart() {
 
             yScale
                 .range([innerRadius, outerRadius])
-                .domain(d3.extent(data, yValue));
+                .domain([0, d3.extent(data, yValue)[1] * 1.2])
+                .nice();
 
             var format = ["%b", "%I %p", "%I %p", "%I %p"];
             var title = ["Mes", "Hora", "Hora", "Hora"];
@@ -76,6 +77,38 @@ function radialLineChart() {
                 .attr("height", height)
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
 
+            // Make Y axis
+            var yAxis_data = [yScale.domain()[0]]
+            yAxis_data = yAxis_data.concat(yScale.ticks(4))
+            yAxis_data.push(yScale.domain()[1]);
+
+            var yAxis = g.select(".y.axis")
+                .attr("text-anchor", "middle");
+
+            var yTick_circle = yAxis
+                .selectAll("circle")
+                .data(yAxis_data);
+            yTick_circle.enter().append("circle")
+                .merge(yTick_circle)
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("opacity", 0.2)
+                .attr("r", yScale);
+            yTick_circle.exit().remove();
+
+            var yTick_text = yAxis
+                .selectAll("text")
+                .data(yAxis_data);
+            yTick_text.enter().append("text")
+                .merge(yTick_text)
+                .style("font-size", 10)
+                .attr("y", function (d) { return -yScale(d); })
+                .attr("dy", "0.35em")
+                .text(function (d) { return "" + d; });
+            yTick_text.exit().remove();
+            // End make Y axis
+
             series = g.selectAll(".series");
             ss = series.selectAll("path")
                 .data(anhos);
@@ -91,83 +124,7 @@ function radialLineChart() {
                 .attr("d", line);
             ss.exit().remove();
 
-
-
-            // [anhos[0]].map(function callback(currentValue, index, array) {
-            // anhos.map(function callback(currentValue, index, array) {
-            //     var serieTemp = dataSeries[currentValue];
-            //     uu = g.select("path")
-            //         .data([serieTemp]);
-            //     // .datum(serieTemp);
-            //     uu.enter()
-            //         .append("path")
-            //         .merge(uu)
-            //         .attr("class", "seriex" + currentValue)
-            //         .attr("fill", "none")
-            //         .attr("stroke", colours(currentValue))
-            //         .attr("stroke-width", 1.5)
-            //         .attr("opacity", opacity)
-            //         .attr("d", line);
-            // });
-
-            // var kk = g.data(anhos);
-            // kk.enter()
-            //     .append("path")
-            //     .attr("class", ".serie" + function (d) { return d; })
-            //     .merge(kk);
-
-
-
-            // [anhos[0]].map(function callback(currentValue, index, array) {
-            //     var serieTemp = dataSeries[currentValue];
-            //     var selectTemp = g.select(".serie" + currentValue)
-
-
-            //         .datum(serieTemp);
-            //     selectTemp.enter().append("path")
-            //         .merge(selectTemp)
-            //         .attr("fill", "none")
-            //         .attr("stroke", colours(currentValue))
-            //         .attr("stroke-width", 1.5)
-            //         .attr("opacity", opacity)
-            //         .attr("d", line);
-            // });
-
-            // var yAxis = g.select(".y.axis")
-            //     .attr("text-anchor", "middle");
-
-            // var yTick = yAxis
-            //     .selectAll("g")
-            //     .data(yScale.ticks(5));
-            // yTick.enter().append("circle")
-            //     .merge(yTick)
-            //     .attr("fill", "none")
-            //     .attr("stroke", "black")
-            //     .attr("stroke-width", 1)
-            //     .attr("opacity", 0.2)
-            //     .attr("r", yScale);
-            // yTick.enter().append("text")
-            //     .merge(yTick)
-            //     .attr("y", function (d) { return -yScale(d); })
-            //     .attr("dy", "0.35em")
-            //     .text(function (d) { return "" + d; });
-            // yTick.exit().remove();
-
-            // yAxis.append("circle")
-            //     .attr("fill", "none")
-            //     .attr("stroke", "black")
-            //     .attr("stroke-width", 1)
-            //     .attr("opacity", 0.2)
-            //     .attr("r", function () { return yScale(yScale.domain()[0]) });
-
-
-            // var labels = yTick.append("text")
-            //     .attr("y", function (d) { return -yScale(d); })
-            //     .attr("dy", "0.35em")
-            //     .attr("fill", "none")
-            //     .attr("stroke-width", 5)
-            //     .attr("stroke-linejoin", "round")
-            //     .text(function (d) { return "$x" + d; });
+            // Make X axis
             var xAxis = g.select(".x.axis")
                 .attr("text-anchor", "middle");
 
@@ -194,6 +151,7 @@ function radialLineChart() {
                 })
                 .style("font-size", 10)
                 .attr("opacity", 0.6);
+            // End make X axis
 
             var title = g.select(".title").select("text")
                 .attr("dy", "-0.2em")
