@@ -378,12 +378,12 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                     .selectAll(".tick text")
                     .attr("transform", "rotate(-90) translate(-10, -13)");
 
-                d3.select("#armaBarChart")
-                    .datum(csData.arma.top(Infinity))
-                    .call(armaBarChart)
-                    .select(".x.axis")
-                    .selectAll(".tick text")
-                    .attr("transform", "rotate(-90) translate(-10, -13)");
+                // d3.select("#armaBarChart")
+                //     .datum(csData.arma.top(Infinity))
+                //     .call(armaBarChart)
+                //     .select(".x.axis")
+                //     .selectAll(".tick text")
+                //     .attr("transform", "rotate(-90) translate(-10, -13)");
 
                 d3.select("#gender")
                     .datum(csData.rangoEtario.all())
