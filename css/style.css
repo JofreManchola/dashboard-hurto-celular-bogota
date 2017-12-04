@@ -5,10 +5,13 @@ div{
 .clicked {
     fill: brown;
 }
+.hour:hover {    
+    stroke: brown;
+    stroke-width: 2;
+}
 .bar {
     fill: steelblue;
 }
-
 .bar:hover {
     fill: brown;
 }

@@ -2,7 +2,7 @@
 
 function barChart(selection) {
   var
-    margin = { top: 20, right: 20, bottom: 30, left: 40 },
+    margin = { top: 20, right: 20, bottom: 30, left: 60 },
     width = 400,
     height = 400,
     innerWidth = width - margin.left - margin.right,
@@ -52,11 +52,12 @@ function barChart(selection) {
       g.select(".y.axis")
         .call(d3.axisLeft(yScale))
         .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr("transform", "translate(-50,20) rotate(-90)")
+        .style("font-size", "15px")
+        .style("fill","black")
         .attr("dy", "0.71em")
         .attr("text-anchor", "end")
-        .text("Frequency");
+        .text("Cantidad de eventos reportados");
 
       var bars = g.selectAll(".bar")
         .data(function (d) { return d; });
@@ -67,8 +68,7 @@ function barChart(selection) {
         .attr("x", X)
         .attr("y", Y)
         .attr("width", xScale.bandwidth())
-        .attr("height", function (d) { return innerHeight - Y(d); })
-        //.attr("class","clicked")       
+        .attr("height", function (d) { return innerHeight - Y(d); })        
         .on("mouseover", onMouseOver)
         .on("mouseout", onMouseOut)
         .on("click", onMouseClick);

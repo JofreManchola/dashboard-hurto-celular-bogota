@@ -11,6 +11,7 @@ function genderChart(selection) {
         titleValue = "",
         onMouseOver = function () { },
         onMouseOut = function () { },
+        onMouseClick = function(){ },
 
         xScale = d3.scaleLinear(),
         xScaleLeft = d3.scaleLinear(),
@@ -121,7 +122,8 @@ function genderChart(selection) {
                 .attr('height', yScale.bandwidth())
                 .attr('transform', translation(0, margin.top))
                 .on("mouseover", onMouseOver)
-                .on("mouseout", onMouseOut);
+                .on("mouseout", onMouseOut)
+                .on("click", onMouseClick);
             leftBarGroup_bar.exit().remove();
 
             leftBarGroup_text = leftBarGroup.selectAll("text")
@@ -148,7 +150,8 @@ function genderChart(selection) {
                 .attr('height', yScale.bandwidth())
                 .attr('transform', translation(0, margin.top))
                 .on("mouseover", onMouseOver)
-                .on("mouseout", onMouseOut);;
+                .on("mouseout", onMouseOut)
+                .on("click", onMouseClick);
             rightBarGroup_bar.exit().remove();
 
             rightBarGroup_text = rightBarGroup.selectAll("text")
@@ -291,6 +294,11 @@ function genderChart(selection) {
         onMouseOut = _;
         return chart;
     };
-
+    chart.onMouseClick = function (_) {
+        if (!arguments.length) return onMouseClick;
+        onMouseClick = _;
+        return chart;
+    };
+    
     return chart;
 }

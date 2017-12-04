@@ -1,4 +1,4 @@
-/* global d3, barChart, genderChart, scatterPlot*/
+/* global d3, barChart, genderChart, scatterPlot, csData */
 
 // http://bl.ocks.org/boeric/7d11226f5e1235cbe645
 // https://bl.ocks.org/micahstubbs/66db7c01723983ff028584b6f304a54a
@@ -52,7 +52,9 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
             console.log("filtro_dinamico: " + filtro_dinamico);
         }
         var armaSelected = [];
-
+        var barrioSelected = [];
+        var genderSelected = [];
+        var armaMovilSelected = [];
 
         function sortByKey(a, b) {
             var key1 = a.key.toLowerCase();
@@ -115,7 +117,6 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                 .x(function (d) { return d.Barrio2; })
                 .y(function (d) { return +d["2016"]; });
 
-
             var myHeatMap = heatMap();
 
             csData = crossfilter(data);
@@ -147,32 +148,66 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
             csData.year = csData.dimYear.group();
             csData.dia = csData.dimDia.group();
 
-            barrioBarChart.onMouseOver(function (d) {
-                csData.dimBarrio.filter(d.key);
-                update();
-            });
-            barrioBarChart.onMouseOut(function (d) {
-                csData.dimBarrio.filterAll();
-                update();
-            });
-
             //:::::::::::::::::::::::::::::::::::::::::::::::::::::
             //:::::::::::::::::::::::::::::::::::::::::::::::::::::
+            
             if (filtro_dinamico) {
 
                 csData.dimArma.filterAll();
+                csData.dimBarrio.filterAll();
+                csData.dimRangoEtario.filterAll();
+                
                 d3.selectAll('rect').attr('style', 'fill:;')
 
+            //-----------------------------------------------------                                
+                //Arma Empleada
                 armaBarChart.onMouseOver(function (d) {
                     csData.dimArma.filter(d.key);
                     update();
                 });
+                
                 armaBarChart.onMouseOut(function (d) {
                     csData.dimArma.filterAll();
                     update();
                 });
-            } else {
-
+                
+            //-----------------------------------------------------                
+                //Barrio
+                barrioBarChart.onMouseOver(function (d) {
+                    csData.dimBarrio.filter(d.key);
+                    update();
+                });
+                
+                barrioBarChart.onMouseOut(function (d) {
+                    csData.dimBarrio.filterAll();
+                    update();
+                });
+                
+            //-----------------------------------------------------                
+                //Género
+                myGenderChart.onMouseOver(function (d) {
+                    csData.dimRangoEtario.filter(d.key);
+                    update();
+                });
+                
+                myGenderChart.onMouseOut(function (d) {
+                    csData.dimRangoEtario.filterAll();
+                    update();
+                });
+                
+            //-----------------------------------------------------                
+                //HeatMap
+                myHeatMap.onMouseOver(function (d) {
+                    csData.dimArmaMovil.filter(d.key);
+                    update();
+                });
+                myHeatMap.onMouseOut(function (d) {
+                    csData.dimArmaMovil.filterAll();
+                    update();
+                });
+                
+            } else { //filtro_dinamico = false
+                //Arma Empleada - OnClick
                 armaBarChart.onMouseClick(function (d) {
 
                     if (d3.select(this).style("fill") === "brown") {
@@ -186,39 +221,60 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                     armaBarChart_onClickFilter();
                     update();
                 });
+                
+            //-----------------------------------------------------                                
+                //Barrio - OnClick
+                barrioBarChart.onMouseClick(function (d) {
 
-                function armaBarChart_onClickFilter() {
-
-                    var string = "";
-                    for (i = 0; i < armaSelected.length; i++) {
-                        string = string + " | " + armaSelected[i];
-                    }
-                    //console.log("string: " + string);
-
-                    csData.dimArma.filter(function (d) {
-                        return (string.includes(d)) ? true : false;
-                    });
-
-                    //console.log("armaSelected size: " + armaSelected.length);
-                    if (armaSelected.length === 0) {
-                        csData.dimArma.filterAll();
+                    if (d3.select(this).style("fill") === "brown") {
+                        d3.select(this).style("fill", "");
+                        barrioSelected.splice(barrioSelected.indexOf(d.key), 1);
+                    } else {
+                        d3.select(this).style("fill", "brown");
+                        barrioSelected.push(d.key);
                     }
 
-                    for (i = 0; i < armaSelected.length; i++) {
-                        console.log(armaSelected[i]);
+                    barrioBarChart_onClickFilter();
+                    update();
+                });
+                
+            //-----------------------------------------------------                                
+                //Género - OnClick
+                myGenderChart.onMouseClick(function (d) {
+
+                    if (d3.select(this).style("fill") === "brown") {
+                        d3.select(this).style("fill", "");
+                        genderSelected.splice(genderSelected.indexOf(d.key), 1);
+                    } else {
+                        d3.select(this).style("fill", "brown");
+                        genderSelected.push(d.key);
                     }
-                }
+
+                    myGenderChart_onClickFilter();
+                    update();
+                });
+                
+            //-----------------------------------------------------                                
+                //HeatMap - OnClick
+                myHeatMap.onMouseClick(function (d) {
+     
+                    if (d3.select(this).style("stroke") === "brown") {
+                        d3.select(this).style("stroke", "");
+                        d3.select(this).style("stroke-width", 0);
+                        armaMovilSelected.splice(armaMovilSelected.indexOf(d.key), 1);
+                    } else {
+                        d3.select(this).style("stroke", "brown");
+                        d3.select(this).style("stroke-width", 2);
+                        armaMovilSelected.push(d.key);
+                    }
+
+                    myHeatMap_onClickFilter();
+                    update();
+                });
             }
-
-            myGenderChart.onMouseOver(function (d) {
-                csData.dimRangoEtario.filter(d.key);
-                update();
-            });
-            myGenderChart.onMouseOut(function (d) {
-                csData.dimRangoEtario.filterAll();
-                update();
-            });
-
+                        
+            //:::::::::::::::::::::::::::::::::::::::::::::::::::::
+            
             weekButtonControl.onMouseOver(function (d) {
                 csData.dimDia.filter(d.key);
                 update();
@@ -227,7 +283,9 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                 csData.dimDia.filterAll();
                 update();
             });
-
+            
+            //:::::::::::::::::::::::::::::::::::::::::::::::::::::
+            
             yearButtonControl.onMouseOver(function (d) {
                 csData.dimYear.filter(d.key);
                 // csData.dimTimestamp.filter(d.key.getFullYear());
@@ -237,15 +295,73 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                 csData.dimYear.filterAll();
                 update();
             });
-            myHeatMap.onMouseOver(function (d) {
-                csData.dimArmaMovil.filter(d.key);
-                update();
-            });
-            myHeatMap.onMouseOut(function (d) {
-                csData.dimArmaMovil.filterAll();
-                update();
-            });
+                        
+            //:::::::::::::::::::::::::::::::::::::::::::::::::::::
+            
+            function armaBarChart_onClickFilter() {
 
+                var string = "";
+                for (i = 0; i < armaSelected.length; i++) { string = string + " | " + armaSelected[i]; }                
+                csData.dimArma.filter(function (d) { return (string.includes(d)) ? true : false; });                
+                if (armaSelected.length === 0) { csData.dimArma.filterAll(); }
+                
+                console.log("---------------------------------");
+                console.log("armaSelected string: " + string);
+                console.log("armaSelected size: " + armaSelected.length);
+                for (i = 0; i < armaSelected.length; i++) { console.log(armaSelected[i]); }
+                console.log("---------------------------------");
+            }
+            
+            //-----------------------------------------------------
+            
+            function barrioBarChart_onClickFilter() {
+
+                var string = "";
+                for (i = 0; i < barrioSelected.length; i++) { string = string + " | " + barrioSelected[i]; }
+                csData.dimBarrio.filter(function (d) { return (string.includes(d)) ? true : false; });
+                if (barrioSelected.length === 0) { csData.dimBarrio.filterAll(); }
+
+                console.log("---------------------------------");
+                console.log("barrioSelected string: " + string);
+                console.log("barrioSelected size: " + barrioSelected.length);
+                for (i = 0; i < barrioSelected.length; i++) { console.log(barrioSelected[i]); }
+                console.log("---------------------------------");
+            }
+            
+            //-----------------------------------------------------
+            
+            function myGenderChart_onClickFilter() {
+
+                var string = "";
+                for (i = 0; i < genderSelected.length; i++) { string = string + " | " + genderSelected[i]; }
+                csData.dimRangoEtario.filter(function (d) { return (string.includes(d)) ? true : false; });
+                if (genderSelected.length === 0) { csData.dimRangoEtario.filterAll(); }
+
+                console.log("---------------------------------");
+                console.log("genderSelected string: " + string);
+                console.log("genderSelected size: " + genderSelected.length);
+                for (i = 0; i < genderSelected.length; i++) { console.log(genderSelected[i]); }
+                console.log("---------------------------------");
+            }
+                                       
+            //-----------------------------------------------------
+                                    
+            function myHeatMap_onClickFilter() {
+
+                var string = "";
+                for (i = 0; i < armaMovilSelected.length; i++) { string = string + " | " + armaMovilSelected[i]; }
+                csData.dimArmaMovil.filter(function (d) { return (string.includes(d)) ? true : false; });
+                if (armaMovilSelected.length === 0) { csData.dimArmaMovil.filterAll(); }
+
+                console.log("---------------------------------");
+                console.log("armaMovilSelected string: " + string);
+                console.log("armaMovilSelected size: " + armaMovilSelected.length);
+                for (i = 0; i < armaMovilSelected.length; i++) { console.log(armaMovilSelected[i]); }
+                console.log("---------------------------------");
+            }
+            
+            //:::::::::::::::::::::::::::::::::::::::::::::::::::::
+            
             function update() {
                 d3.select("#weekButtons")
                     .datum(csData.dia.all().sort(function (a, b) { return sortByKey(a, b); }))
@@ -276,12 +392,15 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                 d3.select("#mesRadialLinechart")
                     .datum(csData.timestampMonth.all())
                     .call(myRadialLineChart);
+                
                 d3.select("#semanaRadialLinechart")
                     .datum(csData.timestampWeek.all())
                     .call(myRadialLineChart);
+                
                 d3.select("#diaRadialLinechart")
                     .datum(csData.timestampDay.all())
                     .call(myRadialLineChart);
+                
                 d3.select("#heatmapArmaMovilchart")
                     .datum(csData.ArmaMovil.all())
                     .call(myHeatMap);

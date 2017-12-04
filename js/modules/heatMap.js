@@ -15,7 +15,8 @@ function heatMap(selection) {
     times = ["A PIE","BICI","C-BUS","C-MOTO","C-TAXI","C-VEH","P-BUS","P-METRO","P-MOTO","P-TAXI","P-VEH","VEHICULO","NO REPORTA"],
     datasets = [],
     onMouseOver = function () { },
-    onMouseOut = function () { };
+    onMouseOut = function () { },
+    onMouseClick = function(){ };
 
   function chart(selection) {
     selection.each(function (data) {
@@ -41,7 +42,7 @@ function heatMap(selection) {
         .attr("height", height + margin.top + margin.bottom)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      const dayLabels = g.selectAll(".dayLabel")
+      const dayLabels = g.selectAll(".dayLabel") //Arma empleada
         .data(days)
         .enter().append("text")
           .text(function (d) { return d; })
@@ -52,7 +53,7 @@ function heatMap(selection) {
           .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
           .attr("class", (d, i) => ((i >= 0 && i <= 9) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"));
 
-      const timeLabels = g.selectAll(".timeLabel")
+      const timeLabels = g.selectAll(".timeLabel") //Movil agresor
         .data(times)
         .enter().append("text")
           .text((d) => d)
@@ -98,8 +99,9 @@ function heatMap(selection) {
             .merge(cards)
             .on("mouseover", onMouseOver)
             .on("mouseout", onMouseOut)
+            .on("click", onMouseClick)
             .transition()
-            .duration(1000)
+            .duration(0)
             .style("fill", (d) => colorScale(d.value));
 
         cards.select("title").text((d) => d.value);
@@ -168,5 +170,12 @@ function heatMap(selection) {
     onMouseOut = _;
     return chart;
   };
+    
+  chart.onMouseClick = function (_) {
+    if (!arguments.length) return onMouseClick;
+    onMouseClick = _;
+    return chart;
+  };
+    
   return chart;
 }
