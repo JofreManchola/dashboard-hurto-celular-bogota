@@ -81,7 +81,8 @@ var myScatterPlot = scatterPlot()
 
 var dateFmt = d3.timeParse("%Y/%m/%d %I:%M:%S %p");
 
-d3.tsv("data/Hurto celulares - Bogota_4.tsv",
+var myHeatMap = heatMap();
+d3.tsv("data/Hurto celulares - Bogota_5.tsv",
     function (d) {
         // This function is applied to each row of the dataset
         d["TIMESTAMP"] = dateFmt(d["TIMESTAMP"]);
@@ -124,6 +125,7 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             csData.dimArma = csData.dimension(function (d) { return d["ARMA EMPLEADA"]; });
             // csData.dimMovilVictima = csData.dimension(function (d) { return d["MOVIL VICTIMA"]; });
             // csData.dimMovilAgresor = csData.dimension(function (d) { return d["MOVIL AGRESOR"]; });
+        csData.dimArmaMovil = csData.dimension(function (d) { return d["ID_ARMA"] + '|' + d["ID_MOVIL"]})
             csData.dimRangoEtario = csData.dimension(function (d) { return d["RANGO_ETARIO"] + ' | ' + d["GENERO"]; });
             // csData.dimGenero = csData.dimension(function (d) { return d["GENERO"]; });
             csData.dimTimestamp = csData.dimension(function (d) { return d["TIMESTAMP"]; });
@@ -137,6 +139,7 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             csData.arma = csData.dimArma.group();
             // csData.movilVictima = csData.dimMovilVictima.group();
             // csData.movilAgresor = csData.dimMovilAgresor.group();
+        csData.ArmaMovil = csData.dimArmaMovil.group();
             csData.rangoEtario = csData.dimRangoEtario.group();
             csData.timestampMonth = csData.dimTimestamp.group(d3.timeMonth);
             csData.timestampWeek = csData.dimTimestamp.group(d3.timeWeek);
@@ -232,6 +235,14 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             });
             yearButtonControl.onMouseOut(function (d) {
                 csData.dimYear.filterAll();
+            update();
+        });
+        myHeatMap.onMouseOver(function (d) {
+            csData.dimArmaMovil.filter(d.key);
+            update();
+        });
+        myHeatMap.onMouseOut(function (d) {
+            csData.dimArmaMovil.filterAll();
                 update();
             });
 
@@ -271,6 +282,9 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
                 d3.select("#diaRadialLinechart")
                     .datum(csData.timestampDay.all())
                     .call(myRadialLineChart);
+            d3.select("#heatmapArmaMovilchart")
+              .datum(csData.ArmaMovil.all())
+              .call(myHeatMap);
             }
 
             update();
