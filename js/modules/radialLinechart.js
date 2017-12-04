@@ -44,17 +44,34 @@ function radialLineChart() {
             outerRadius = Math.min((width - margin.right - margin.left), (height - margin.top - margin.bottom)) / 2 - 6;
             innerRadius = outerRadius / 2.5;
 
-            xScale_domain = [
-                parseDate("" + anhos[0] + "-01-01"),
-                parseDate("" + anhos[anhos.length - 1] + "-12-31")
-            ];
+            xScale_domain = [];
+            switch (modo) {
+                case 0: // Año
+                    xScale_domain = [
+                        parseDate("" + anhos[0] + "-01-01"),
+                        parseDate("" + anhos[anhos.length - 1] + "-12-31")
+                    ];
+                    break;
+                case 1: // Día
+                    xScale_domain = [
+                        parseDate("" + anhos[0] + "-01-01"),
+                        parseDate("" + anhos[0] + "-01-02")
+                        // parseDate("" + anhos[anhos.length - 1] + "-01-02")
+                    ];
+                    break;
+                default:
+                    ;
+            }
+
+            // xScale_domain = [
+            //     parseDate("" + anhos[0] + "-01-01"),
+            //     parseDate("" + anhos[anhos.length - 1] + "-12-31")
+            // ];
+
             xScale
                 .range([0, fullCircle * anhos.length])
                 .domain(xScale_domain);
             // .domain(d3.extent(data, xValue));
-
-            console.log("xScale.domain()", xScale.domain());
-            console.log("xScale.range()", xScale.range());
 
             yScale
                 .range([innerRadius, outerRadius])
@@ -79,11 +96,23 @@ function radialLineChart() {
                     parseDate("" + anhos[0] + "-11-01"),
                     parseDate("" + anhos[0] + "-12-01")
                 ],
+                [
+                    parseDate("" + anhos[0] + "-01-01"),
+                    parseDate("" + anhos[0] + "-02-01"),
+                    parseDate("" + anhos[0] + "-03-01"),
+                    parseDate("" + anhos[0] + "-04-01"),
+                    parseDate("" + anhos[0] + "-05-01"),
+                    parseDate("" + anhos[0] + "-06-01"),
+                    parseDate("" + anhos[0] + "-07-01"),
+                    parseDate("" + anhos[0] + "-08-01"),
+                    parseDate("" + anhos[0] + "-09-01"),
+                    parseDate("" + anhos[0] + "-10-01"),
+                    parseDate("" + anhos[0] + "-11-01"),
+                    parseDate("" + anhos[0] + "-12-01")
+                ],
                 []
             ];
 
-            // var title_ = title[modo];
-            // var subtitle_ = subtitle[modo];
             var labelFormat = d3.timeFormat(format[modo]);
             var line = d3.lineRadial().angle(X).radius(Y);
 
@@ -156,7 +185,6 @@ function radialLineChart() {
             // Make X axis
             // xScale_data = xScale.ticks(1);
             xScale_data = xScale_tick_data[modo];
-            console.log("xScale_data", xScale_data);
             var xAxis = g.select(".x.axis")
                 .attr("text-anchor", "middle");
 

@@ -26,9 +26,11 @@ var sorterKey = {
     "diciembre": 19
 }
 
-var dateFmt = d3.timeParse("%Y/%m/%d %I:%M:%S %p");
+// var dateFmt = d3.timeParse("%Y/%m/%d %I:%M:%S %p");
+var dateFmt = d3.timeParse("%Y/%m/%d %H:%M:%S");
+var dateFmt2 = d3.timeParse("%Y/%m/%d %H:%M:%S");
 
-d3.tsv("data/Hurto celulares - Bogota_5.tsv",
+d3.tsv("data/Hurto celulares - Bogota_6.tsv",
     function (d) {
         // This function is applied to each row of the dataset
         d["TIMESTAMP"] = dateFmt(d["TIMESTAMP"]);
@@ -133,7 +135,18 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
             csData.dimRangoEtario = csData.dimension(function (d) { return d["RANGO_ETARIO"] + '   | ' + d["GENERO"]; });
             // csData.dimGenero = csData.dimension(function (d) { return d["GENERO"]; });
             csData.dimTimestamp = csData.dimension(function (d) { return d["TIMESTAMP"]; });
-            csData.dimYear = csData.dimension(function (d) { return d["TIMESTAMP"].getFullYear(); });
+            csData.dimYear = csData.dimension(function (d) {
+                try {
+                    if (!d["TIMESTAMP"].getFullYear()) {
+                        console.log(d);
+                    }
+                }
+                catch (e) {
+                    console.log(d);
+                    throw e;
+                }
+                return d["TIMESTAMP"].getFullYear();
+            });
             csData.dimDia = csData.dimension(function (d) { return d["DIA"]; });
 
             // GENERO: [MASCULINO|FEMENINO]
@@ -145,9 +158,19 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
             // csData.movilAgresor = csData.dimMovilAgresor.group();
             csData.ArmaMovil = csData.dimArmaMovil.group();
             csData.rangoEtario = csData.dimRangoEtario.group();
-            csData.timestampMonth = csData.dimTimestamp.group(d3.timeMonth);
-            csData.timestampWeek = csData.dimTimestamp.group(d3.timeWeek);
             csData.timestampDay = csData.dimTimestamp.group(d3.timeDay);
+            csData.timestampWeek = csData.dimTimestamp.group(d3.timeWeek);
+            csData.timestampMonth = csData.dimTimestamp.group(d3.timeMonth);
+            csData.timestampHour30 = csData.dimTimestamp.group(function (d) {
+                n_minutes = 30;
+                b = d.getMinutes() - (d.getMinutes() % n_minutes);
+                c = "" + d.getFullYear() + "/01/01 " + d.getHours() + ":" + b + ":00"
+                return dateFmt2(c);
+            });
+
+
+            // csData.timestampMinute = csData.dimTimestamp.group(d3.timeMinute);
+            // csData.timestampDay = csData.dimTimestamp.group();
             csData.year = csData.dimYear.group();
             csData.dia = csData.dimDia.group();
 
@@ -505,6 +528,14 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                         .title('Año')
                         .subtitle('Día')
                     );
+
+                // d3.select("#timestampHour30")
+                //     .datum(csData.timestampHour30.all())
+                //     .call(myRadialLineChart
+                //         .title('Día')
+                //         .subtitle('30 min')
+                //         .modo(1)
+                //     );
 
                 d3.select("#heatmapArmaMovilchart")
                     .datum(csData.ArmaMovil.all())
