@@ -14,7 +14,7 @@ function radialLineChart() {
     var xValue = function (d) { return d[0]; };
     var yValue = function (d) { return d[1]; };
 
-    var xScale = d3.scaleTime();
+    xScale = d3.scaleTime();
     yScale = d3.scaleRadial();
 
     var opacity = 0.7;
@@ -80,7 +80,7 @@ function radialLineChart() {
             // Make Y axis
             var yAxis_data = [yScale.domain()[0]]
             yAxis_data = yAxis_data.concat(yScale.ticks(4))
-            yAxis_data.push(yScale.domain()[1]);
+            // yAxis_data.push(yScale.domain()[1]);
 
             var yAxis = g.select(".y.axis")
                 .attr("text-anchor", "middle");

@@ -132,6 +132,7 @@ function genderChart(selection) {
                 .attr('class', 'text_data')
                 .attr('x', function (d) { return xScaleRight(-xLeftValue(d)) - 5; })
                 .attr('y', function (d) { return Y(d) + margin.top + yScale.bandwidth() / 2 + 5; })
+                .attr('opacity',function (d) { return (xLeftValue(d) == 0) ? 0.0 : 1.0; })        
                 .text(function (d) { return xLeftValue(d); })
                 .attr('style', 'font-size:10px;transform: scaleX(-1);-ms-transform:scaleX(-1);-moz-transform:scaleX(-1);-webkit-transform:scaleX(-1);-o-transform:scaleX(-1);');
             leftBarGroup_text.exit().remove();
@@ -145,7 +146,9 @@ function genderChart(selection) {
                 .attr('y', function (d) { return Y(d); })
                 .attr('width', function (d) { return XRight(d); })
                 .attr('height', yScale.bandwidth())
-                .attr('transform', translation(0, margin.top));
+                .attr('transform', translation(0, margin.top))
+                .on("mouseover", onMouseOver)
+                .on("mouseout", onMouseOut);;
             rightBarGroup_bar.exit().remove();
 
             rightBarGroup_text = rightBarGroup.selectAll("text")
@@ -156,6 +159,7 @@ function genderChart(selection) {
                 .merge(rightBarGroup_text)
                 .attr('x', function (d) { return XRight(d) + 5; })
                 .attr('y', function (d) { return Y(d) + yScale.bandwidth() / 2 + 5; })
+                .attr('opacity',function (d) { return (xRightValue(d) == 0) ? 0.0 : 1.0; })
                 .text(function (d) { return xRightValue(d) })
                 .attr('style', 'font-size:10px;')
                 .attr('transform', translation(0, margin.top));

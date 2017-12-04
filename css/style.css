@@ -2,7 +2,9 @@
 div{
     float: left;
 }
-
+.clicked {
+    fill: brown;
+}
 .bar {
     fill: steelblue;
 }
@@ -14,13 +16,13 @@ div{
 	fill: rgb(255, 145, 229);
 }
 .bar.left:hover {
-	fill: green;
+	fill: brown;
 }
 .bar.right {
 	fill: rgb(83, 145, 238);
 }
 .bar.right:hover {
-	fill: green;
+	fill: brown;
 }
 .axis--x path {
     /* display: none; */
@@ -49,6 +51,19 @@ svg.barchart{
 .buttonControl text.btn:hover{
     fill:blue;
     cursor: pointer;
+}
+input[type=checkbox]
+{
+    /* Triple-sized Checkboxes */
+    -ms-transform: scale(1); /* IE */
+    -moz-transform: scale(1); /* FF */
+    -webkit-transform: scale(1); /* Safari and Chrome */
+    -o-transform: scale(1); /* Opera */
+    padding: 10px;    
+    margin-left: 20px;
+}
+.interactiveObject{
+    margin-right: 15px;
 }
 .clear{
     clear: both;
