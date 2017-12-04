@@ -20,6 +20,7 @@ function radialLineChart() {
     var opacity = 0.7;
 
     var colours = d3.scaleOrdinal(d3.schemeCategory10);
+    var parseDate = d3.timeParse("%Y-%m-%d");
 
     function chart(selection) {
         selection.each(function (data) {
@@ -41,9 +42,17 @@ function radialLineChart() {
             outerRadius = Math.min((width - margin.right - margin.left), (height - margin.top - margin.bottom)) / 2 - 6;
             innerRadius = outerRadius / 2.5;
 
+            xScale_domain = [
+                parseDate("" + anhos[0] + "-01-01"),
+                parseDate("" + anhos[anhos.length - 1] + "-12-31")
+            ];
             xScale
                 .range([0, fullCircle * anhos.length])
-                .domain(d3.extent(data, xValue));
+                .domain(xScale_domain);
+            // .domain(d3.extent(data, xValue));
+
+            console.log("xScale.domain()", xScale.domain());
+            console.log("xScale.range()", xScale.range());
 
             yScale
                 .range([innerRadius, outerRadius])
@@ -53,6 +62,24 @@ function radialLineChart() {
             var format = ["%b", "%I %p", "%I %p", "%I %p"];
             var title = ["Mes", "Hora", "Hora", "Hora"];
             var subtitle = ["Día", "15 min", "30 min", "60 min"];
+            var xScale_tick_data = [
+                [
+                    parseDate("" + anhos[0] + "-01-01"),
+                    parseDate("" + anhos[0] + "-02-01"),
+                    parseDate("" + anhos[0] + "-03-01"),
+                    parseDate("" + anhos[0] + "-04-01"),
+                    parseDate("" + anhos[0] + "-05-01"),
+                    parseDate("" + anhos[0] + "-06-01"),
+                    parseDate("" + anhos[0] + "-07-01"),
+                    parseDate("" + anhos[0] + "-08-01"),
+                    parseDate("" + anhos[0] + "-09-01"),
+                    parseDate("" + anhos[0] + "-10-01"),
+                    parseDate("" + anhos[0] + "-11-01"),
+                    parseDate("" + anhos[0] + "-12-01")
+                ],
+                []
+            ];
+
             var title_ = title[modo];
             var subtitle_ = subtitle[modo];
             var labelFormat = d3.timeFormat(format[modo]);
@@ -125,23 +152,43 @@ function radialLineChart() {
             ss.exit().remove();
 
             // Make X axis
+            // xScale_data = xScale.ticks(1);
+            xScale_data = xScale_tick_data[modo];
+            console.log("xScale_data", xScale_data);
             var xAxis = g.select(".x.axis")
                 .attr("text-anchor", "middle");
 
-            var xTick = xAxis
+            var xTick1 = xAxis
                 .selectAll("g")
-                .data(xScale.ticks(12))
-                .enter().append("g")
+                .data(xScale_data);
+            var xTick = xTick1.enter().append("g")
+                .merge(xTick1)
                 .attr("text-anchor", "middle")
+                // .attr("transform", function (d) {
+                //     return "rotate(" + ((xScale(d)) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)";
+                // });
                 .attr("transform", function (d) {
                     return "rotate(" + ((xScale(d)) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)";
                 });
+            xTick1.exit().remove();
 
-            xTick.append("line")
+            var xTick_line = xAxis
+                .selectAll("line")
+                .data(xScale_data);
+            xTick_line.enter().append("line")
+                .merge(xTick_line)
                 .attr("x2", -10)
-                .attr("stroke", "#000");
+                .attr("stroke", "#F00")
+                .attr("transform", function (d) {
+                    return "rotate(" + ((xScale(d)) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)";
+                });
+            xTick_line.exit().remove();
 
-            xTick.append("text")
+            var xTick_text = xAxis
+                .selectAll("text")
+                .data(xScale_data);
+            xTick_text.enter().append("text")
+                .merge(xTick_text)
                 .attr("transform", function (d) {
                     var angle = xScale(d);
                     return (((angle < Math.PI / 2) || ((Math.PI * 3 / 2) < angle)) ? "rotate(90)translate(0,22)" : "rotate(-90)translate(0, -15)");
@@ -150,7 +197,17 @@ function radialLineChart() {
                     return labelFormat(d);
                 })
                 .style("font-size", 10)
-                .attr("opacity", 0.6);
+                .attr("opacity", 0.6)
+                .attr("text-anchor", "end")
+                .attr("transform", function (d) {
+                    return "rotate(" + ((xScale(d)) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)";
+                });
+
+            // .attr("transform", function (d) {
+            // var angle = xScale(d);
+            // return ((angle < Math.PI / 2) || (angle > (Math.PI * 3 / 2))) ? "rotate(90)translate(0,22)" : "rotate(-90)translate(0, -15)";
+            // });
+            xTick_text.exit().remove();
             // End make X axis
 
             var title = g.select(".title").select("text")
