@@ -113,7 +113,6 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
                 .x(function (d) { return d.key; })
                 .y(function (d) { return d.value; })
                 .modo(0);
-            // .modo(modo);
 
             var myScatterPlot = scatterPlot()
                 .width(500)
@@ -488,15 +487,24 @@ d3.tsv("data/Hurto celulares - Bogota_5.tsv",
 
                 d3.select("#mesRadialLinechart")
                     .datum(csData.timestampMonth.all())
-                    .call(myRadialLineChart);
+                    .call(myRadialLineChart
+                        .title('Año')
+                        .subtitle('Mes')
+                    );
 
                 d3.select("#semanaRadialLinechart")
                     .datum(csData.timestampWeek.all())
-                    .call(myRadialLineChart);
+                    .call(myRadialLineChart
+                        .title('Año')
+                        .subtitle('Semana')
+                    );
 
                 d3.select("#diaRadialLinechart")
                     .datum(csData.timestampDay.all())
-                    .call(myRadialLineChart);
+                    .call(myRadialLineChart
+                        .title('Año')
+                        .subtitle('Día')
+                    );
 
                 d3.select("#heatmapArmaMovilchart")
                     .datum(csData.ArmaMovil.all())

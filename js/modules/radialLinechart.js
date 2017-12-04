@@ -8,6 +8,8 @@ function radialLineChart() {
         width = 100,
         height = 100,
         innerRadius = 100,
+        title = "T",
+        subtitle = "S",
         outerRadius = Math.min((width - margin.right - margin.left), (height - margin.top - margin.bottom)) / 2 - 6,
         fullCircle = 2 * Math.PI;
 
@@ -60,8 +62,8 @@ function radialLineChart() {
                 .nice();
 
             var format = ["%b", "%I %p", "%I %p", "%I %p"];
-            var title = ["Mes", "Hora", "Hora", "Hora"];
-            var subtitle = ["Día", "15 min", "30 min", "60 min"];
+            // var title = ["Mes", "Hora", "Hora", "Hora"];
+            // var subtitle = ["Día", "15 min", "30 min", "60 min"];
             var xScale_tick_data = [
                 [
                     parseDate("" + anhos[0] + "-01-01"),
@@ -80,8 +82,8 @@ function radialLineChart() {
                 []
             ];
 
-            var title_ = title[modo];
-            var subtitle_ = subtitle[modo];
+            // var title_ = title[modo];
+            // var subtitle_ = subtitle[modo];
             var labelFormat = d3.timeFormat(format[modo]);
             var line = d3.lineRadial().angle(X).radius(Y);
 
@@ -210,16 +212,16 @@ function radialLineChart() {
             xTick_text.exit().remove();
             // End make X axis
 
-            var title = g.select(".title").select("text")
+            var _title = g.select(".title").select("text")
                 .attr("dy", "-0.2em")
                 .attr("text-anchor", "middle")
-                .text(title_); //Title
+                .text(title); //Title
 
-            var subtitle = g.select(".subtitle").select("text")
+            var _subtitle = g.select(".subtitle").select("text")
                 .attr("dy", "1em")
                 .attr("text-anchor", "middle")
                 .attr("opacity", 0.6)
-                .text(subtitle_);  //Subtitle
+                .text(subtitle);  //Subtitle
         });
     }
 
@@ -259,6 +261,18 @@ function radialLineChart() {
     chart.y = function (_) {
         if (!arguments.length) return yValue;
         yValue = _;
+        return chart;
+    };
+
+    chart.title = function (_) {
+        if (!arguments.length) return title;
+        title = _;
+        return chart;
+    };
+
+    chart.subtitle = function (_) {
+        if (!arguments.length) return subtitle;
+        subtitle = _;
         return chart;
     };
 

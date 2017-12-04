@@ -79,7 +79,7 @@ input[type=checkbox]
 .clear{
     clear: both;
     width: 100%;
-    height: 100px;
+    /* height: 100px; */
 }
 .reset {
     padding-left: 1em;
