@@ -11,7 +11,8 @@ function buttonControl(selection) {
         xScale = d3.scaleBand().padding(0.1),
         onMouseOver = function () { },
         onMouseOut = function () { },
-        onMouseDown = function () { };
+        onMouseDown = function () { },
+        onMouseClick = function(){ };
 
     function chart(selection) {
         selection.each(function (data) {
@@ -43,7 +44,9 @@ function buttonControl(selection) {
                 .text(function (d) { return xValue(d) })
                 .attr('style', 'font-size:10px;')
                 .on("mouseover", onMouseOver)
-                .on("mouseout", onMouseOut);
+                .on("mouseout", onMouseOut)
+                .on("click", onMouseClick);
+            
             g_text.exit().remove();
         });
     }
@@ -94,6 +97,12 @@ function buttonControl(selection) {
     chart.onMouseDown = function (_) {
         if (!arguments.length) return onMouseDown;
         onMouseDown = _;
+        return chart;
+    };
+    
+    chart.onMouseClick = function (_) {
+        if (!arguments.length) return onMouseClick;
+        onMouseClick = _;
         return chart;
     };
 

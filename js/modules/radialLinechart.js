@@ -17,7 +17,7 @@ function radialLineChart() {
     xScale = d3.scaleTime();
     yScale = d3.scaleRadial();
 
-    var opacity = 0.7;
+    var opacity = 0.5;
 
     var colours = d3.scaleOrdinal(d3.schemeCategory10);
     var parseDate = d3.timeParse("%Y-%m-%d");
@@ -178,7 +178,7 @@ function radialLineChart() {
             xTick_line.enter().append("line")
                 .merge(xTick_line)
                 .attr("x2", -10)
-                .attr("stroke", "#F00")
+                .attr("stroke", "#000")
                 .attr("transform", function (d) {
                     return "rotate(" + ((xScale(d)) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)";
                 });
