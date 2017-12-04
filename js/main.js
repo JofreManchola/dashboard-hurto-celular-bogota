@@ -55,6 +55,8 @@ var myGenderChart = genderChart()
 var myRadialLineChart = radialLineChart()
     .width(300)
     .height(300)
+    .x(function (d) { return d.key; })
+    .y(function (d) { return d.value; })
     .modo(0);
 // .modo(modo);
 
@@ -90,7 +92,7 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
         // csData.dimMovilAgresor = csData.dimension(function (d) { return d["MOVIL AGRESOR"]; });
         csData.dimRangoEtario = csData.dimension(function (d) { return d["RANGO_ETARIO"]; });
         // csData.dimGenero = csData.dimension(function (d) { return d["GENERO"]; });
-        // csData.dimTimestamp = csData.dimension(function (d) { return d["TIMESTAMP"]; });
+        csData.dimTimestamp = csData.dimension(function (d) { return d["TIMESTAMP"]; });
         csData.dimYear = csData.dimension(function (d) { return d["TIMESTAMP"].getFullYear(); });
         csData.dimDia = csData.dimension(function (d) { return d["DIA"]; });
 
@@ -102,7 +104,9 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
         // csData.movilVictima = csData.dimMovilVictima.group();
         // csData.movilAgresor = csData.dimMovilAgresor.group();
         csData.rangoEtario = csData.dimRangoEtario.group();
-        // csData.timestampYear = csData.dimTimestamp.group(d3.timeYear);
+        csData.timestampMonth = csData.dimTimestamp.group(d3.timeMonth);
+        csData.timestampWeek = csData.dimTimestamp.group(d3.timeWeek);
+        csData.timestampDay = csData.dimTimestamp.group(d3.timeDay);
         csData.year = csData.dimYear.group();
         csData.dia = csData.dimDia.group();
 
@@ -152,9 +156,6 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
             update();
         });
 
-        // data.sort(function (a, b) { return b["2016"] - a["2016"]; })
-
-        // csData.dimBarrio.fiter();
         function update() {
             d3.select("#weekButtons")
                 .datum(csData.dia.all().sort(function (a, b) { return sortByKey(a, b); }))
@@ -182,9 +183,15 @@ d3.tsv("data/Hurto celulares - Bogota_4.tsv",
                 .datum(csData.rangoEtario.all())
                 .call(myGenderChart);
 
-            // d3.select("#anhoRadialLinechart")
-            //     .datum(csData.timestampYear.all())
-            //     .call(myRadialLineChart);
+            d3.select("#mesRadialLinechart")
+                .datum(csData.timestampMonth.all())
+                .call(myRadialLineChart);
+            d3.select("#semanaRadialLinechart")
+                .datum(csData.timestampWeek.all())
+                .call(myRadialLineChart);
+            d3.select("#diaRadialLinechart")
+                .datum(csData.timestampDay.all())
+                .call(myRadialLineChart);
         }
 
         update();
