@@ -5,27 +5,31 @@ div{
 .clicked {
     fill: brown;
 }
-.hour:hover {    
+.hour:hover {
     stroke: brown;
     stroke-width: 2;
+    cursor: pointer;
 }
 .bar {
     fill: steelblue;
 }
 .bar:hover {
     fill: brown;
+    cursor: pointer;
 }
 .bar.left {
 	fill: rgb(255, 145, 229);
 }
 .bar.left:hover {
-	fill: brown;
+    fill: brown;
+    cursor: pointer;
 }
 .bar.right {
 	fill: rgb(83, 145, 238);
 }
 .bar.right:hover {
-	fill: brown;
+    fill: brown;
+    cursor: pointer;
 }
 .axis--x path {
     /* display: none; */
